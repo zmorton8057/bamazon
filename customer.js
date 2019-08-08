@@ -53,7 +53,7 @@ function table() {
     }
 }
 
-var selectionMake = function(){
+var selectionMake = function() {
     inquirer
         .prompt([
             {
@@ -68,10 +68,77 @@ var selectionMake = function(){
             }/* Pass your questions in here */
         ])
         .then(function(userPurchase) {
-            connection.query("SELECT * FROM products WHERE id=?", userPurchase.itemID, function(err, res){
-                    for(var i = 0; i < res.length; i++) {
-                        console.log(res[i])
-                    }
-                    })
-                })
-            }
+            connection.query("SELECT * FROM products WHERE id=?", userPurchase.itemID, function(err, res) {
+                for (var i = 0; i < res.length; i++) {
+
+                    var newInventoryQuantity = res[i].quantity - userPurchase.userQuantity;
+                        
+                    
+                    var userSelect = userPurchase.itemID;
+                        userSelect = parseInt(userSelect)
+                    
+                    if (userPurchase.userQuantity > res[i].quantity) {
+                        table()
+                        console.log("================================== Insufficient Quantity Available ==================================")
+                        console.log(`The item "${res[i].product_name}" only has ${res[i].quantity} in stock.`)
+                        console.log(`You tried to order a quantity of ${userPurchase.userQuantity}`)
+
+                    } else {
+
+                        console.log("============================================ Item Selected ==============================================")
+                        console.log(`ID: ${res[i].id}`)
+                        console.log(`Item: ${res[i].product_name}`)
+                        console.log(`Price: $${res[i].price}`)
+                        console.log(`Quantity: ${userPurchase.userQuantity}`)
+                        console.log('----------------------------')
+                        var total = parseInt(res[i].price) * parseInt(userPurchase.userQuantity)
+                        console.log(`Total: $${total}`)
+                        confirmPrompt(newInventoryQuantity, userSelect)
+                    } 
+                } 
+            }) 
+        }) 
+} 
+
+function confirmPrompt(newInventoryQuantity, userSelect) {
+    inquirer
+        .prompt([
+            {
+                type: "confirm",
+                name: "confirmOrder",
+                message: "Please Confirm Order",
+            }    
+        ])
+        .then(function() {
+            connection.query("UPDATE products SET quantity=? WHERE id=?", [newInventoryQuantity, userSelect], function(err, res){
+            console.log("Order Confirmed")
+            continueShopping()
+            })
+        })
+    }
+
+    function continueShopping() {
+        inquirer
+            .prompt([
+                {
+                    type: "confirm",
+                    name: "confirmShopping",
+                    message: "Do you wish to continue shopping?",
+                }    
+            ])
+            .then(function(answer) {
+               
+                if (answer.confirmShopping) {
+                    table();
+                } else {
+                    console.log('================================== Thanks for Choosing Bamazon ==================================')
+                    connection.end()
+                }
+                 
+                
+               
+    
+            })
+            
+    }
+
