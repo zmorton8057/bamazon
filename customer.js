@@ -13,7 +13,7 @@ var connection = mysql.createConnection({
 connection.connect(function(err) {
     if (err) throw err;
     console.log('connected as id ' + connection.threadId);
-
+    ////// Displays table callback to run after connection is established
     table()
 
 })
@@ -26,7 +26,7 @@ function table() {
         head: ['ID', 'Item', 'Price', 'Available Stock'],
         colWidths: [10, 30, 30, 30]
     });
-
+    ///////////// displays the inventory available to the table
     displayInventory();
     ////////// retrieves inventory from mySQL with a query
     function displayInventory() {
@@ -47,6 +47,7 @@ function table() {
             console.log("========================================= Welcome to Bamazon ===========================================")
             console.log("============================================= Inventory ================================================")
             console.log(table.toString());
+            ////////// runs inquirer prompt after the inventory is displayed
             selectionMake();
         });
     }
@@ -67,8 +68,10 @@ var selectionMake = function(){
             }/* Pass your questions in here */
         ])
         .then(function(userPurchase) {
-            connection.query("SELECT * FROM products WHERE item_id=?", userPurchase.inputId, function(err, res){
-                
+            connection.query("SELECT * FROM products WHERE id=?", userPurchase.itemID, function(err, res){
+                    for(var i = 0; i < res.length; i++) {
+                        console.log(res[i])
+                    }
                     })
                 })
             }
