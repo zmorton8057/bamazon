@@ -109,11 +109,17 @@ function confirmPrompt(newInventoryQuantity, userSelect) {
                 message: "Please Confirm Order",
             }    
         ])
-        .then(function() {
+        .then(function(answer) {
+            if (answer === true){
             connection.query("UPDATE products SET quantity=? WHERE id=?", [newInventoryQuantity, userSelect], function(err, res){
             console.log("Order Confirmed")
             continueShopping()
+            
             })
+        } else {
+            console.log("Order Not Placed")
+            continueShopping();
+        }
         })
     }
 
