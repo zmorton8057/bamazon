@@ -73,7 +73,6 @@ var selectionMake = function() {
 
                     var newInventoryQuantity = res[i].quantity - userPurchase.userQuantity;
                         
-                    
                     var userSelect = userPurchase.itemID;
                         userSelect = parseInt(userSelect)
                     
@@ -112,12 +111,12 @@ function confirmPrompt(newInventoryQuantity, userSelect) {
         .then(function(answer) {
             if (answer === true){
             connection.query("UPDATE products SET quantity=? WHERE id=?", [newInventoryQuantity, userSelect], function(err, res){
-            console.log("Order Confirmed")
+            console.log("=========================================== Order Confirmed ==============================================")
             continueShopping()
             
             })
         } else {
-            console.log("Order Not Placed")
+            console.log("=========================================== Order Cancelled ==============================================")
             continueShopping();
         }
         })
@@ -140,10 +139,7 @@ function confirmPrompt(newInventoryQuantity, userSelect) {
                     console.log('================================== Thanks for Choosing Bamazon ==================================')
                     connection.end()
                 }
-                 
-                
                
-    
             })
             
     }
