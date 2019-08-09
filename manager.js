@@ -32,7 +32,8 @@ function menu () {
                     "Inventory",
                     "Low Inventory",
                     "Order",
-                    "Add New Item"
+                    "Add New Item",
+                    "Log Out"
                 ]
             },    
         ])
@@ -43,9 +44,11 @@ function menu () {
             } else if (answer.menu === "Low Inventory") {
                 tableLow()
             } else if (answer.menu === "Order") {
-                console.log("Order")
+                order()
             } else if (answer.menu === "Add New Item") {
                 console.log("Add New Item")
+            } else if (answer.menu === "Log Out") {
+                continueShopping();
             }
         })
 }
@@ -119,3 +122,89 @@ function tableLow() {
         });
     }
 }
+
+
+var order = function() {
+    inquirer
+        .prompt([
+            {
+                type: "input",
+                name: "itemID",
+                message: "Input the ID of Item you wish to purchase",
+            },
+            {
+                type: "input",
+                name: "userQuantity",
+                message: "Input the quantity you wish to purchase",
+            }/* Pass your questions in here */
+        ])
+        .then(function(userPurchase) {
+            connection.query("SELECT * FROM products WHERE id=?", userPurchase.itemID, function(err, res) {
+                for (var i = 0; i < res.length; i++) {
+
+                    var newInventoryQuantity = parseInt(res[i].quantity) + parseInt(userPurchase.userQuantity);
+                        console.log(newInventoryQuantity)
+                    var userSelect = userPurchase.itemID;
+                        userSelect = parseInt(userSelect)
+                    
+
+                        console.log("============================================ Item Selected ==============================================")
+                        console.log(`ID: ${res[i].id}`)
+                        console.log(`Item: ${res[i].product_name}`)
+                        console.log(`Price: $${res[i].price}`)
+                        console.log(`Quantity: ${userPurchase.userQuantity}`)
+                        console.log('----------------------------')
+                        var total = parseInt(res[i].price) * parseInt(userPurchase.userQuantity)
+                        console.log(`Total: $${total}`)
+                        confirmPrompt(newInventoryQuantity, userSelect)
+                    
+                } 
+            }) 
+        }) 
+} 
+
+function confirmPrompt(newInventoryQuantity, userSelect) {
+    inquirer
+        .prompt([
+            {
+                type: "confirm",
+                name: "confirmOrder",
+                message: "Please Confirm Order",
+            }    
+        ])
+        .then(function(answer) {
+            if (answer.confirmOrder === true){
+            connection.query("UPDATE products SET quantity=? WHERE id=?", [newInventoryQuantity, userSelect], function(err, res){
+                if(err) throw err
+            console.log("=========================================== Order Confirmed ==============================================")
+            continueShopping()
+            
+            })
+        } else {
+            console.log("=========================================== Order Cancelled ==============================================")
+            continueShopping();
+        }
+        })
+    }
+
+    function continueShopping() {
+        inquirer
+            .prompt([
+                {
+                    type: "confirm",
+                    name: "confirmShopping",
+                    message: "Do you wish to continue ordering?",
+                }    
+            ])
+            .then(function(answer) {
+               
+                if (answer.confirmShopping) {
+                    table();
+                } else {
+                    console.log('================================== You Have Logged Off ==================================')
+                    connection.end()
+                }
+               
+            })
+            
+    }

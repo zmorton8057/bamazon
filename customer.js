@@ -72,7 +72,7 @@ var selectionMake = function() {
                 for (var i = 0; i < res.length; i++) {
 
                     var newInventoryQuantity = res[i].quantity - userPurchase.userQuantity;
-                        
+                        console.log(newInventoryQuantity)
                     var userSelect = userPurchase.itemID;
                         userSelect = parseInt(userSelect)
                     
@@ -109,8 +109,9 @@ function confirmPrompt(newInventoryQuantity, userSelect) {
             }    
         ])
         .then(function(answer) {
-            if (answer === true){
+            if (answer.confirmOrder === true){
             connection.query("UPDATE products SET quantity=? WHERE id=?", [newInventoryQuantity, userSelect], function(err, res){
+                if(err) throw err
             console.log("=========================================== Order Confirmed ==============================================")
             continueShopping()
             
