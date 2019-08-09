@@ -40,8 +40,8 @@ function menu () {
 
             if (answer.menu === "Inventory"){
                 table()
-            } else if (answer.menu === "Inventory") {
-                console.log("Low Inventory")
+            } else if (answer.menu === "Low Inventory") {
+                tableLow()
             } else if (answer.menu === "Order") {
                 console.log("Order")
             } else if (answer.menu === "Add New Item") {
@@ -62,6 +62,42 @@ function table() {
     ////////// retrieves inventory from mySQL with a query
     function displayInventory() {
         connection.query("SELECT * FROM products", function(err, res) {
+            if (err) throw err;
+
+            for (var i = 0; i < res.length; i++) {
+                ////////Assigns SQL data to variables so it can be pushed to a table for display purposes
+                var itemID = res[i].id,
+                    productName = res[i].product_name,
+                    price = `$${res[i].price}`,
+                    quantity = res[i].quantity;
+                //////////Pushes sql data to Table CLI
+                table.push(
+                    [itemID, productName, price, quantity]
+                );
+            }
+            console.log("======================================= Welcome to Bamazon ===========================================")
+            console.log("============================================= Inventory ================================================")
+            console.log(table.toString());
+            ////////// runs inquirer prompt after the inventory is displayed
+           menu()
+        });
+    }
+}
+
+
+
+
+function tableLow() {
+
+    // Creates a table with colum titles of ID, Item, Price, and Stock
+    var table = new Table({
+        head: ['ID', 'Item', 'Price', 'Available Stock'],
+        colWidths: [10, 30, 30, 30]
+    });
+    displayLowInventory()
+    ////////// retrieves inventory from mySQL with a query
+    function displayLowInventory() {
+        connection.query("SELECT * FROM products WHERE quantity < 6", function(err, res) {
             if (err) throw err;
 
             for (var i = 0; i < res.length; i++) {
