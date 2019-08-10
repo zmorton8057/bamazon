@@ -20,7 +20,7 @@ connection.connect(function(err) {
 
 
 
-//////////////////// Main Menu ////////////////////
+//////////////////////////////////////// Main Menu ////////////////////////////////////////////////
 function menu () {
     inquirer
         .prompt([
@@ -40,19 +40,21 @@ function menu () {
         .then(function(answer) {
 
             if (answer.menu === "Inventory"){
-                table()
+                table();
             } else if (answer.menu === "Low Inventory") {
-                tableLow()
+                tableLow();
             } else if (answer.menu === "Order") {
-                order()
+                order();
             } else if (answer.menu === "Add New Item") {
-                console.log("Add New Item")
+                newItem();
             } else if (answer.menu === "Log Out") {
                 continueShopping();
             }
         })
 }
 
+
+/////////////////////////////////  INVENTORY ////////////////////////////////////////////////
 function table() {
 
     // Creates a table with colum titles of ID, Item, Price, and Stock
@@ -89,6 +91,7 @@ function table() {
 
 
 
+/////////////////////////////////  LOW INVENTORY ////////////////////////////////////////////////
 
 function tableLow() {
 
@@ -123,7 +126,7 @@ function tableLow() {
     }
 }
 
-
+/////////////////////////////////  ORDER ////////////////////////////////////////////////
 var order = function() {
     inquirer
         .prompt([
@@ -162,6 +165,50 @@ var order = function() {
             }) 
         }) 
 } 
+
+
+var newItem = function() {
+    inquirer
+        .prompt([
+            {
+                type: "input",
+                name: "itemID",
+                message: "Input the ID of Item you wish to purchase",
+            },
+            {
+                type: "input",
+                name: "userQuantity",
+                message: "Input the quantity you wish to purchase",
+            }/* Pass your questions in here */
+        ])
+        .then(function(userPurchase) {
+            connection.query("SELECT * FROM products WHERE id=?", userPurchase.itemID, function(err, res) {
+                for (var i = 0; i < res.length; i++) {
+
+                    var newInventoryQuantity = parseInt(res[i].quantity) + parseInt(userPurchase.userQuantity);
+                        console.log(newInventoryQuantity)
+                    var userSelect = userPurchase.itemID;
+                        userSelect = parseInt(userSelect)
+                    
+
+                        console.log("============================================ Item Selected ==============================================")
+                        console.log(`ID: ${res[i].id}`)
+                        console.log(`Item: ${res[i].product_name}`)
+                        console.log(`Price: $${res[i].price}`)
+                        console.log(`Quantity: ${userPurchase.userQuantity}`)
+                        console.log('----------------------------')
+                        var total = parseInt(res[i].price) * parseInt(userPurchase.userQuantity)
+                        console.log(`Total: $${total}`)
+                        confirmPrompt(newInventoryQuantity, userSelect)
+                    
+                } 
+            }) 
+        }) 
+} 
+
+
+
+//////////////////////////// Order/New Item Confirmation Prompts ///////////////////////////
 
 function confirmPrompt(newInventoryQuantity, userSelect) {
     inquirer
