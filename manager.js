@@ -48,7 +48,7 @@ function menu () {
             } else if (answer.menu === "Add New Item") {
                 newItem();
             } else if (answer.menu === "Log Out") {
-                continueShopping();
+                logOut();
             }
         })
 }
@@ -166,50 +166,6 @@ var order = function() {
         }) 
 } 
 
-
-var newItem = function() {
-    inquirer
-        .prompt([
-            {
-                type: "input",
-                name: "itemID",
-                message: "Input the ID of Item you wish to purchase",
-            },
-            {
-                type: "input",
-                name: "userQuantity",
-                message: "Input the quantity you wish to purchase",
-            }/* Pass your questions in here */
-        ])
-        .then(function(userPurchase) {
-            connection.query("SELECT * FROM products WHERE id=?", userPurchase.itemID, function(err, res) {
-                for (var i = 0; i < res.length; i++) {
-
-                    var newInventoryQuantity = parseInt(res[i].quantity) + parseInt(userPurchase.userQuantity);
-                        console.log(newInventoryQuantity)
-                    var userSelect = userPurchase.itemID;
-                        userSelect = parseInt(userSelect)
-                    
-
-                        console.log("============================================ Item Selected ==============================================")
-                        console.log(`ID: ${res[i].id}`)
-                        console.log(`Item: ${res[i].product_name}`)
-                        console.log(`Price: $${res[i].price}`)
-                        console.log(`Quantity: ${userPurchase.userQuantity}`)
-                        console.log('----------------------------')
-                        var total = parseInt(res[i].price) * parseInt(userPurchase.userQuantity)
-                        console.log(`Total: $${total}`)
-                        confirmPrompt(newInventoryQuantity, userSelect)
-                    
-                } 
-            }) 
-        }) 
-} 
-
-
-
-//////////////////////////// Order/New Item Confirmation Prompts ///////////////////////////
-
 function confirmPrompt(newInventoryQuantity, userSelect) {
     inquirer
         .prompt([
@@ -224,23 +180,67 @@ function confirmPrompt(newInventoryQuantity, userSelect) {
             connection.query("UPDATE products SET quantity=? WHERE id=?", [newInventoryQuantity, userSelect], function(err, res){
                 if(err) throw err
             console.log("=========================================== Order Confirmed ==============================================")
-            continueShopping()
+            logOut()
             
             })
         } else {
             console.log("=========================================== Order Cancelled ==============================================")
-            continueShopping();
+            logOut();
         }
         })
     }
 
-    function continueShopping() {
+///////////////////////////// Add new item to Inventory //////////////////////////
+var newItem = function() {
+    inquirer
+        .prompt([
+            {
+                type: "input",
+                name: "productName",
+                message: "Input the name of the product you are adding",
+            },
+            {
+                type: "input",
+                name: "productPrice",
+                message: "Input the price point of the item you wish to sell it for",
+            },
+            {
+                type: "input",
+                name: "productQuantity",
+                message: "Input the initial quantity you are ordering",
+            }/* Pass your questions in here */
+        ])
+        .then(function(mgrPurchase) {
+            connection.query("INSERT INTO products (product_name, price, quantity) VALUES (?, ?, ?)", [mgrPurchase.productName, mgrPurchase.productPrice, mgrPurchase.productQuantity], function(err, res) {
+                
+                        var product = mgrPurchase.productName;
+                        var price = mgrPurchase.productPrice;
+                        var quantity = mgrPurchase.productQuantity;
+
+                        console.log(`============================================ ${product} Was Added to Bamazon Inventory ==============================================`)
+                        console.log(`Item: ${product}`)
+                        console.log(`Price: $${price}`)
+                        console.log(`Quantity: ${quantity}`)
+                        console.log('----------------------------')
+                        var total = parseInt(price) * parseInt(quantity)
+                        console.log(`Total: $${total}`)
+                        logOut();
+                    
+                
+            }) 
+        }) 
+} 
+
+
+
+///////////////////// Log Out Function /////////////////////////
+    function logOut() {
         inquirer
             .prompt([
                 {
                     type: "confirm",
                     name: "confirmShopping",
-                    message: "Do you wish to continue ordering?",
+                    message: "Do you wish to remain in Manager Portal?",
                 }    
             ])
             .then(function(answer) {
