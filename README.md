@@ -1,4 +1,4 @@
-#Bamazon - Web Store
+# Bamazon - Web Store
 Bamazon is an online store that sells discounts on well-known sunglasses brands.
 1. Use the keyboard to type for inputs 
 2. Type "y"/"n" for yes or no prompts
@@ -51,7 +51,7 @@ Allows for the addition of new items you wish to carry in Bamazon.
 2. Input the amount you are selling the item for.
 3. Input the initial quantity you want to order.
 
-#####Notes:
+##### Notes:
 A. You must use the order menu item for all future orders.
 B. Be sure that you want to add the item because there is not a verification screen after entering the quantity.
 ![Add New Item](./images/mrkdnmgr5.jpg)
@@ -59,9 +59,3 @@ After you have added the item you can choose to remain in the inventory(y/n)
 ![Updated Inventory](./images/mrkdnmgr6.jpg)
 #### Log Out
 Logs out of the Manager portal.
-
-
-
-## Bamazon - Supervisor
-### 1. Menu
-Incomplete section because it needs to be inner-joined with another departments table.
